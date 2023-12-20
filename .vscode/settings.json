@@ -1,7 +1,8 @@
 {
-    "editor.suggest.showStructs": false,
-    "tailwindCSS.rootFontSize": 10,
-    "editor.codeActionsOnSave": { "source.fixAll.eslint": true },
-    "editor.formatOnSave": true,
-    "editor.tabSize": 2,
+  "editor.suggest.showStructs": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2
 }
