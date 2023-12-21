@@ -1,5 +1,3 @@
-"use client";
-
 import DarkModeToggle from "@/components/molecules/dark-mode-toggle";
 import Nav from "@/components/molecules/nav";
 

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter as FontSans, Noto_Sans_KR } from "next/font/google";
-import "./globals.css";
+import { Noto_Sans_KR } from "next/font/google";
+
 import { cn } from "@/utils";
 import ThemeProvider from "@/components/atoms/theme-provider";
-import Header from "@/components/organisms/header";
+
+import "./globals.css";
 
 export const fontSans = Noto_Sans_KR({
   subsets: ["latin"],
@@ -12,8 +13,8 @@ export const fontSans = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "그림 입출고 관리 서비스",
-  description: "그림의 입고와 출고를 관리해주는 서비스입니다.",
+  title: "입출고 관리 서비스",
+  description: "입고와 출고를 관리해주는 서비스입니다.",
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
@@ -31,9 +32,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
           {children}
-          <div className="w-full h-14" />
         </ThemeProvider>
       </body>
     </html>
