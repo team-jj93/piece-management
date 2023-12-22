@@ -22,7 +22,7 @@ const AppNav = ({
   currentURL,
   ...restProps
 }: AppNavProps) => {
-  const calendarURL = `/team/${teamId}/calendar/month`;
+  const calendarURL = `/team/${teamId}/calendar`;
   const listURL = `/team/${teamId}/piece`;
 
   return (

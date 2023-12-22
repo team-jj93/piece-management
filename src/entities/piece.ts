@@ -24,7 +24,7 @@ export interface Piece {
   memo: string;
   groupId: number;
   status: "received" | "delayed" | "departured";
-  receivedDate: string;
-  scheduledDepartureDate: string;
-  departureDate: string | null;
+  receivedDate: Date;
+  scheduledDepartureDate: Date;
+  departureDate: Date | null;
 }

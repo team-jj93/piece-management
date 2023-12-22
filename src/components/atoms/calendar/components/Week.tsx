@@ -1,12 +1,16 @@
+"use client";
+
 import { MouseEventHandler, RefAttributes, forwardRef, useMemo } from "react";
 
-import { cn } from "@/utils/cn";
 import type { CalendarEvent, CalendarEventsMonth } from "../types";
+import { cn } from "@/utils";
 import { useCalendarControls, useCalendarState } from "../hooks/useCalendar";
 import { convertToEventMap } from "../utils/convertEvent";
 import { getClassNames } from "../utils/getClassNames";
 import Nav from "./Nav";
 import { CalendarDays } from "lucide-react";
+
+const DAYS_OF_WEEK = ["일", "월", "화", "수", "목", "금", "토"];
 
 interface SelectDateIconClassProps {
   isSelected: boolean;
@@ -22,8 +26,10 @@ interface DateProps {
   eventsMonth: CalendarEventsMonth;
   setSelectedDate: (date: Date) => void;
   classNames?: {
+    day?: string;
     date?: string;
-    selectDateButton?: string;
+    dateContainer?: string;
+    selectDateButton?: string | ((props: SelectDateIconClassProps) => string);
     selectDateIcon?: string | ((props: SelectDateIconClassProps) => string);
     eventsContainer?: string;
     event?: string;
@@ -42,33 +48,55 @@ const Date = ({
   const date = currentDate.getDate();
   const month = currentDate.getMonth();
   const time = currentDate.getTime();
-  const isViewOutside = month !== viewMonth;
+  const day = currentDate.getDay();
   const events = eventsMonth[date];
   const isSelected = time === selectedTime;
   const isToday = time === todayTime;
+  const isViewOutside = month !== viewMonth;
 
   return (
-    <div className={classNames.date}>
-      <button
-        className={classNames.selectDateButton}
-        onClick={() => setSelectedDate(currentDate)}
-      >
-        <div
+    <div className={classNames.dateContainer}>
+      <div className={classNames.date}>
+        <button
           className={cn(
-            "text-sm font-medium w-[26px] h-[26px] leading-6 rounded-full text-center",
+            "w-full h-fit rounded-xl flex flex-col justify-center items-center",
             {
-              ["bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"]:
-                isSelected,
-              ["bg-red-500 bg-opacity-80 text-white"]: isToday,
-              ["text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30"]:
-                isViewOutside,
+              ["bg-border"]: isSelected,
             },
-            classNames.selectDateIcon
+            typeof classNames.selectDateButton === "function"
+              ? classNames.selectDateButton({
+                  isSelected,
+                  isToday,
+                  isViewOutside,
+                })
+              : classNames.selectDateButton
           )}
+          onClick={() => setSelectedDate(currentDate)}
         >
-          {date}
-        </div>
-      </button>
+          <p className={classNames.day}>{DAYS_OF_WEEK[day]}</p>
+          <div
+            className={cn(
+              "text-sm font-medium w-[26px] h-[26px] leading-6 rounded-full text-center mb-2",
+              {
+                ["bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"]:
+                  isSelected,
+                ["bg-red-500 bg-opacity-80 text-white"]: isToday,
+                ["text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30"]:
+                  isViewOutside,
+              },
+              typeof classNames.selectDateIcon === "function"
+                ? classNames.selectDateIcon({
+                    isSelected,
+                    isToday,
+                    isViewOutside,
+                  })
+                : classNames.selectDateIcon
+            )}
+          >
+            {date}
+          </div>
+        </button>
+      </div>
 
       <div className={classNames.eventsContainer}>
         {events &&
@@ -85,57 +113,30 @@ const Date = ({
   );
 };
 
-interface DaysOfWeekProps {
-  className?: string;
-  dayClassName?: string;
-}
-
-const DaysOfWeek = ({ className, dayClassName }: DaysOfWeekProps) => {
-  const day = cn(
-    "w-full h-full basis-1/7 text-muted-foreground rounded-md font-medium text-sm",
-    "leading-8",
-    dayClassName
-  );
-
-  return (
-    <div className={cn("flex w-full h-fit text-center", className)}>
-      <p className={day}>일</p>
-      <p className={day}>월</p>
-      <p className={day}>화</p>
-      <p className={day}>수</p>
-      <p className={day}>목</p>
-      <p className={day}>금</p>
-      <p className={day}>토</p>
-    </div>
-  );
-};
-
-interface MonthProps {
+interface WeekProps {
   onClickTitle?: MouseEventHandler<HTMLButtonElement>;
   events?: CalendarEvent[];
   className?: string;
   classNames?: {
-    monthContainer?: string;
+    weekContainer?: string;
     header?: string;
     nav?: string;
     navButton?: string;
     navButtonPrevious?: string;
     navButtonNext?: string;
     navButtonToday?: string;
-    daysOfWeek?: string;
-    day?: string;
-    week?: string;
+    dates?: string;
     date?: string;
-    selectDateButton?: string;
+    selectDateButton?: string | ((props: SelectDateIconClassProps) => string);
     selectDateIcon?: string | ((props: SelectDateIconClassProps) => string);
     eventsContainer?: string;
     event?: string;
   };
 }
 
-const Month = forwardRef<
+const Week = forwardRef<
   HTMLDivElement,
-  MonthProps & RefAttributes<HTMLDivElement>
+  WeekProps & RefAttributes<HTMLDivElement>
 >(
   (
     {
@@ -143,29 +144,34 @@ const Month = forwardRef<
       events,
       className,
       classNames: {
+        selectDateButton,
         selectDateIcon,
-        monthContainer,
+        weekContainer,
         header,
         nav,
         navButton,
         navButtonPrevious,
         navButtonNext,
         navButtonToday,
-        daysOfWeek,
-        day,
-        week,
         ...restClassNames
       } = {},
     },
     ref
   ) => {
-    const { viewYear, viewMonth, viewMonthCalendar, todayTime, selectedTime } =
-      useCalendarState();
     const {
-      moveToPreviousMonth,
-      moveToNextMonth,
+      viewYear,
+      viewMonth,
+      viewWeek,
+      viewMonthCalendar,
+      todayTime,
+      selectedTime,
+    } = useCalendarState();
+    const {
+      moveToPreviousWeek,
+      moveToNextWeek,
       setSelectedDate,
       resetToToday,
+      setViewDate,
     } = useCalendarControls();
     const eventMap = useMemo(() => convertToEventMap(events), [events]);
     const eventsMonth = eventMap[viewYear]
@@ -176,16 +182,16 @@ const Month = forwardRef<
       () => ({
         ...getClassNames(
           {
-            date: "w-full h-fit min-h-[60px] basis-1/7",
-            selectDateButton:
-              "w-full h-[26px] flex justify-center items-center",
+            day: "w-full h-full leading-8 basis-1/7 text-muted-foreground rounded-md font-medium text-sm",
+            date: "w-full h-fit py-0 px-1",
             eventsContainer:
-              "w-full px-1 h-fit flex flex-col justify-start items-start mt-1",
+              "w-full px-1 h-fit flex flex-col justify-start items-start",
             event:
-              "w-full rounded h-5 bg-muted flex sm:justify-center justify-between items-center pr-2 items-center sm:gap-1 mb-1",
+              "w-full rounded h-5 bg-muted flex sm:justify-center justify-between items-center pr-2 items-center sm:gap-1 mb-1 first:mt-1",
           },
           restClassNames
         ),
+        selectDateButton,
         selectDateIcon,
       }),
       // eslint-disable-next-line
@@ -207,15 +213,15 @@ const Month = forwardRef<
           >
             <button
               type="button"
-              className="w-full h-auto text-inherit hover:text-muted  border-b"
+              className="w-full h-auto text-inherit hover:text-muted border-b"
               onClick={onClickTitle}
             >
               {viewYear}년 {viewMonth + 1}월
             </button>
           </h2>
           <Nav
-            onClickLeft={moveToPreviousMonth}
-            onClickRight={moveToNextMonth}
+            onClickLeft={moveToPreviousWeek}
+            onClickRight={moveToNextWeek}
             onClickCenter={resetToToday}
             className={nav}
             classNames={{
@@ -226,30 +232,30 @@ const Month = forwardRef<
           />
         </div>
 
-        <DaysOfWeek className={daysOfWeek} dayClassName={day} />
-
-        <div className={cn("w-full min-w-[320px] h-fit", monthContainer)}>
-          {viewMonthCalendar.map((weekCalendar, idx) => (
-            <div key={idx} className={cn("flex flex-row", week)}>
-              {weekCalendar.map((day) => (
-                <Date
-                  key={day.getTime()}
-                  eventsMonth={eventsMonth}
-                  currentDate={day}
-                  selectedTime={selectedTime}
-                  viewMonth={viewMonth}
-                  todayTime={todayTime}
-                  setSelectedDate={setSelectedDate}
-                  classNames={dateClassNames}
-                />
-              ))}
-            </div>
-          ))}
+        <div
+          className={cn(
+            "w-full min-w-[320px] h-fit grid grid-cols-7",
+            weekContainer
+          )}
+        >
+          {viewMonthCalendar[viewWeek] &&
+            viewMonthCalendar[viewWeek].map((day) => (
+              <Date
+                key={day.getTime()}
+                eventsMonth={eventsMonth}
+                currentDate={day}
+                selectedTime={selectedTime}
+                viewMonth={viewMonth}
+                todayTime={todayTime}
+                setSelectedDate={setSelectedDate}
+                classNames={dateClassNames}
+              />
+            ))}
         </div>
       </div>
     );
   }
 );
-Month.displayName = "Month";
+Week.displayName = "Week";
 
-export default Month;
+export default Week;

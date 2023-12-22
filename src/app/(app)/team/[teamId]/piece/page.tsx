@@ -1,6 +1,6 @@
 "use client";
 
-import PieceList from "@/components/molecules/piece-list";
+import PieceTabs from "@/components/molecules/piece-tabs";
 import { pieces } from "@/resources/pieces";
 
 const Page = () => {
@@ -13,7 +13,7 @@ const Page = () => {
               목록
             </h1>
           </div>
-          <PieceList pieces={pieces} />
+          <PieceTabs pieces={pieces} />
         </div>
       </div>
     </main>

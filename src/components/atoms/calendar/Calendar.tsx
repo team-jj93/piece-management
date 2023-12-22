@@ -1,10 +1,9 @@
-"use client";
-
 import { ReactNode, useMemo } from "react";
 
 import { CalendarContext } from "./utils/calendarContext";
 import CalendarManager from "./utils/calendarManager";
 import Month from "./components/Month";
+import Week from "./components/Week";
 
 type CalendarProps = {
   initialDate?: Date;
@@ -22,5 +21,6 @@ const Calendar = ({ initialDate, children }: CalendarProps) => {
 };
 
 Calendar.Month = Month;
+Calendar.Week = Week;
 
 export default Calendar;

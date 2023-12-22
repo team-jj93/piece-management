@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import PieceList from '../../components/molecules/piece-list';
+import PieceList from '../../components/molecules/piece-tabs';
 import { pieces } from "../../resources/pieces";
 
 const meta = {
