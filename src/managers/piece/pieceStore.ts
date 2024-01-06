@@ -96,7 +96,6 @@ export class PieceStore implements PieceStoreInterface {
       return;
     }
 
-
     if (target === "list") {
       this.statusBasedPieces = {};
       this.pieceMap.forEach(piece => {
@@ -117,6 +116,19 @@ export class PieceStore implements PieceStoreInterface {
       this.addDateBasedPiecesMap(piece);
     });
     this.sortStatusBasedPieces();
+  }
+
+  public refresh() {
+    this.pieceMap = new Map();
+    this.dateBasedPiecesMap = {};
+    this.statusBasedPieces = {};
+    this.monthlyPiecesRequestCache = new Set();
+    this.statusBasedPiecesRequestCache = {
+      all: 0,
+      received: 0,
+      delayed: 0,
+      departured: 0,
+    };
   }
 
   public addPieceMap(pieces: Piece | Piece[], target?: "date" | "list") {

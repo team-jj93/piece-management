@@ -47,6 +47,7 @@ export abstract class PieceStoreInterface {
   public abstract getMonthlyPieces: (date: Date) => Promise<MonthlyPieces | null>;
   public abstract getStatusBasedPieces: (status: Piece["status"], index: number, count?: number) => Promise<Piece[] | null>;
   public abstract getPiece: (pieceId: Piece["id"]) => Promise<Piece | null>;
+  public abstract refresh: () => void;
 }
 
 export abstract class PieceManagerInterface {

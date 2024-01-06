@@ -1,18 +1,11 @@
-import { ReactNode, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { AlertCircle, CalendarClock, CheckCircle2, Disc2 } from "lucide-react";
 
 import { pieces } from "@/resources/pieces";
 import Calendar from "@/components/atoms/calendar";
 import PieceTable from "@/components/molecules/piece-table";
 import { Piece } from "@/entities/piece";
 import { useCalendarState } from "@/components/atoms/calendar/hooks/useCalendar";
-import {
-  AlertCircle,
-  CalendarClock,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-  Disc2,
-} from "lucide-react";
 
 interface PieceCalendarDateProps {
   pieces: Piece[];

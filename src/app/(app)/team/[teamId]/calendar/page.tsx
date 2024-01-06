@@ -1,9 +1,7 @@
-"use client";
-
-import Calendar from "@/components/atoms/calendar";
+// import Calendar from "@/components/atoms/calendar";
 import PieceCalendar from "@/components/organisms/piece-calendar";
-import { pieces } from "@/resources/pieces";
-import { AlertCircle, CalendarClock, CheckCircle2, Disc2 } from "lucide-react";
+// import { pieces } from "@/resources/pieces";
+// import { AlertCircle, CalendarClock, CheckCircle2, Disc2 } from "lucide-react";
 
 const Page = () => {
   return (

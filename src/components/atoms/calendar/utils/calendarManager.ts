@@ -120,7 +120,7 @@ class CalendarManager {
   private notify() {
     this.refreshTodayDate();
     this.setCalendarState();
-
+    console.log(this.calendarState, this.calendarCount);
     this.listeners.forEach(listener => listener(this.calendarState));
   }
 
@@ -171,7 +171,9 @@ class CalendarManager {
     this.viewYear = newViewYear;
     this.viewMonth = newViewMonth;
     this.viewDay = newViewDay;
+    // TO-DO: 이 부분 수정 필요함.
     this.viewWeek = Math.floor((newViewDate + newViewFirstDay) / 7);
+    console.log(newViewDate, newViewFirstDay, this.viewWeek);
   }
 
   /**

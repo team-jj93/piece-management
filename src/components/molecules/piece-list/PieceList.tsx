@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import {
   AlertCircle,
@@ -13,6 +15,7 @@ import {
   AccordionContent,
 } from "@/components/atoms/accordion";
 import PieceDetail from "../piece-detail";
+import AspectRatio from "@/components/atoms/aspect-ratio";
 
 interface PieceListProps {
   pieces: Piece[];
@@ -25,6 +28,17 @@ const PieceList = ({ pieces }: PieceListProps) => {
         <AccordionItem value={piece.id} key={piece.id}>
           <div className="w-full h-fit flex justify-between">
             <AccordionPrimitive.Header className="px-4 flex w-full justify-between gap-4">
+              <div className="w-12 h-12 overflow-hidden">
+                <AspectRatio ratio={1 / 1} className="bg-muted w-full h-full">
+                  <Image
+                    className="rounded-md object-cover"
+                    src={piece.imgUrl}
+                    alt={piece.name}
+                    fill
+                    unoptimized
+                  />
+                </AspectRatio>
+              </div>
               <AccordionPrimitive.Trigger className="flex-auto flex justify-between items-center gap-4 px-1 py-4 text-sm font-medium transition-all hover:font-bold [&[data-state=open]>svg]:rotate-180 w-10/12 overflow-hidden">
                 <div className="flex-auto overflow-hidden flex h-full justify-start gap-4">
                   <h3 className="font-semibold leading-none tracking-tight flex-auto text-ellipsis overflow-hidden">

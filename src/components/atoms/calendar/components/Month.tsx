@@ -6,7 +6,6 @@ import { useCalendarControls, useCalendarState } from "../hooks/useCalendar";
 import { convertToEventMap } from "../utils/convertEvent";
 import { getClassNames } from "../utils/getClassNames";
 import Nav from "./Nav";
-import { CalendarDays } from "lucide-react";
 
 interface SelectDateIconClassProps {
   isSelected: boolean;
