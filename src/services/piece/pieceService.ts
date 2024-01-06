@@ -68,6 +68,18 @@ export class PieceService implements PieceServiceInterface {
   }
 
   public async uploadImage(image: File) {
+    try {
+      const imgUrl = await this.pieceFetch.post("image/piece", image, { contentType: "multipart/form-data" });
+
+      if (typeof imgUrl !== "string") {
+        throw new APIError().alert();
+      }
+
+      return imgUrl;
+    } catch (error) {
+      this.errorHandler(error);
+    }
+
     return "";
   }
 
