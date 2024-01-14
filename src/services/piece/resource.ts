@@ -1,6 +1,6 @@
 import { PieceFetchInterface, Query, RequestConfig } from "./interface";
 import { Piece } from "@/entities/piece";
-import { schemaOfCreatePieceProps, schemaOfUpdatePieceProps } from "./schema";
+import { createPiecePropsSchema, updatePiecePropsSchema } from "./schema";
 
 class APIError extends Error {
   status: number | string = 400;
@@ -31,7 +31,7 @@ export class ResourcePieceFetch implements PieceFetchInterface {
 
   private createPiece(pieceProps: any): number {
     try {
-      const validatedPieceProps = schemaOfCreatePieceProps.parse(pieceProps);
+      const validatedPieceProps = createPiecePropsSchema.parse(pieceProps);
 
       const piece = {
         ...this.initialPiece,
@@ -56,7 +56,7 @@ export class ResourcePieceFetch implements PieceFetchInterface {
         throw new APIError("잘못된 요청입니다.");
       }
 
-      const validatedPieceProps = schemaOfUpdatePieceProps.parse(pieceProps);
+      const validatedPieceProps = updatePiecePropsSchema.parse(pieceProps);
 
       if (!this.pieces.filter(piece => piece.id === id)[0]) {
         throw new APIError("Piece가 존재하지 않습니다.").setStatus(404);

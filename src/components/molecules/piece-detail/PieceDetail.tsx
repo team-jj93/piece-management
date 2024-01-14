@@ -28,7 +28,7 @@ const PieceDetail = ({ piece, action }: PieceDetailProps) => {
     name,
     status,
     imgUrl,
-    submitter,
+    author,
     requester,
     receivedDate,
     scheduledDepartureDate,
@@ -42,13 +42,15 @@ const PieceDetail = ({ piece, action }: PieceDetailProps) => {
       <Card>
         <div className="overflow-hidden relative pt-4 pl-4 pr-4 pb-0">
           <AspectRatio ratio={4 / 3} className="bg-muted">
-            <Image
-              className="rounded-md object-cover"
-              src={imgUrl}
-              alt={name}
-              fill
-              unoptimized
-            />
+            {imgUrl && (
+              <Image
+                className="rounded-md object-cover"
+                src={imgUrl}
+                alt={name}
+                fill
+                unoptimized
+              />
+            )}
           </AspectRatio>
         </div>
 
@@ -98,7 +100,7 @@ const PieceDetail = ({ piece, action }: PieceDetailProps) => {
 
           <div className="space-y-1">
             <p className="text-sm font-medium leading-none">등록자</p>
-            <p className="text-sm text-muted-foreground">{submitter}</p>
+            <p className="text-sm text-muted-foreground">{author}</p>
           </div>
 
           <div className="space-y-1">

@@ -1,7 +1,7 @@
 import { Piece } from "@/entities/piece";
 import { APIError } from "@/utils/fetch";
 import { PieceFetchInterface, PieceServiceInterface } from "./interface";
-import { UpdatePieceProps, schemaOfPiece, schemaOfCreatePieceProps, schemaOfPieces, schemaOfUpdatePieceProps, CreatePieceProps } from "./schema";
+import { UpdatePieceProps, pieceSchema, createPiecePropsSchema, piecesSchema, updatePiecePropsSchema, CreatePieceProps } from "./schema";
 
 
 export class PieceService implements PieceServiceInterface {
@@ -28,7 +28,7 @@ export class PieceService implements PieceServiceInterface {
     try {
       const data = await this.pieceFetch.get(`piece/${pieceId}`);
 
-      return schemaOfPiece.parse(data) as Piece;
+      return pieceSchema.parse(data) as Piece;
     } catch (error) {
       this.errorHandler(error);
     }
@@ -40,7 +40,7 @@ export class PieceService implements PieceServiceInterface {
     try {
       const data = await this.pieceFetch.get("piece", { query: { date: date.toDateString() } });
 
-      return schemaOfPieces.parse(data) as Piece[];
+      return piecesSchema.parse(data) as Piece[];
     } catch (error) {
       this.errorHandler(error);
     }
@@ -59,7 +59,7 @@ export class PieceService implements PieceServiceInterface {
 
       const data = await this.pieceFetch.get("piece", { query });
 
-      return schemaOfPieces.parse(data) as Piece[];
+      return piecesSchema.parse(data) as Piece[];
     } catch (error) {
       this.errorHandler(error);
     }
@@ -85,7 +85,7 @@ export class PieceService implements PieceServiceInterface {
 
   public async createPiece(createPieceProps: CreatePieceProps) {
     try {
-      const validatedPieceProps = schemaOfCreatePieceProps.parse(createPieceProps);
+      const validatedPieceProps = createPiecePropsSchema.parse(createPieceProps);
 
       const id = await this.pieceFetch.post("piece", validatedPieceProps)
 
@@ -103,7 +103,7 @@ export class PieceService implements PieceServiceInterface {
 
   public async updatePiece(pieceId: number, updatePieceProps: UpdatePieceProps) {
     try {
-      const validatedPieceProps = schemaOfUpdatePieceProps.parse(updatePieceProps);
+      const validatedPieceProps = updatePiecePropsSchema.parse(updatePieceProps);
 
       await this.pieceFetch.patch(`piece/${pieceId}`, validatedPieceProps);
 

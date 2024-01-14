@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const schemaOfPiece = z.object({
+export const pieceSchema = z.object({
   id: z.number(),
   name: z.string(),
   author: z.string(),
@@ -14,9 +14,9 @@ export const schemaOfPiece = z.object({
   departureDate: z.date().nullable()
 });
 
-export const schemaOfPieces = z.array(schemaOfPiece);
+export const piecesSchema = z.array(pieceSchema);
 
-export const schemaOfCreatePieceProps = z.object({
+export const createPiecePropsSchema = z.object({
   name: z.string(),
   receivedDate: z.date(),
   scheduledDepartureDate: z.date(),
@@ -26,9 +26,9 @@ export const schemaOfCreatePieceProps = z.object({
   memo: z.string().optional(),
 });
 
-export type CreatePieceProps = z.infer<typeof schemaOfCreatePieceProps>;
+export type CreatePieceProps = z.infer<typeof createPiecePropsSchema>;
 
-export const schemaOfUpdatePieceProps = z.object({
+export const updatePiecePropsSchema = z.object({
   name: z.string().optional(),
   receivedDate: z.date().optional(),
   scheduledDepartureDate: z.date().optional(),
@@ -38,4 +38,4 @@ export const schemaOfUpdatePieceProps = z.object({
   memo: z.string().optional(),
 });
 
-export type UpdatePieceProps = z.infer<typeof schemaOfUpdatePieceProps>;
+export type UpdatePieceProps = z.infer<typeof updatePiecePropsSchema>;
