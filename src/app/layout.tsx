@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 
 import { cn } from "@/utils";
-import ThemeProvider from "@/components/atoms/theme-provider";
+import Provider from "@/provider";
 
 import "./globals.css";
 
@@ -26,14 +26,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
           fontSans.variable
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
