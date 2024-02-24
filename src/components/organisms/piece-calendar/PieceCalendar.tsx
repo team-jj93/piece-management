@@ -1,11 +1,14 @@
+"use client";
+
 import { useMemo, useState } from "react";
 import { AlertCircle, CalendarClock, CheckCircle2, Disc2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
-import { pieces } from "@/resources/pieces";
 import Calendar from "@/components/atoms/calendar";
 import PieceTable from "@/components/molecules/piece-table";
 import { Piece } from "@/entities/piece";
 import { useCalendarState } from "@/components/atoms/calendar/hooks/useCalendar";
+import { pieceService } from "@/services/piece";
 
 interface PieceCalendarDateProps {
   pieces: Piece[];
@@ -43,9 +46,18 @@ const PieceCalendarDate = ({ pieces }: PieceCalendarDateProps) => {
 
 const PieceCalendar = () => {
   const [isMonth, setIsMonth] = useState(false);
+  const { isPending, error, data } = useQuery({
+    queryKey: ["repoData"],
+    queryFn: () => {
+      const date = new Date();
+
+      return pieceService.getMonthlyPieces(date);
+    },
+    initialData: [] as Piece[],
+  });
 
   const events = Object.entries(
-    pieces.reduce(
+    data.reduce(
       (
         acc,
         { status, receivedDate, scheduledDepartureDate, departureDate }
@@ -202,7 +214,7 @@ const PieceCalendar = () => {
         <div className="w-full px-3 mt-2">
           <div className="w-full h-full border-t" />
         </div>
-        <PieceCalendarDate pieces={pieces} />
+        <PieceCalendarDate pieces={data} />
       </div>
     </Calendar>
   );

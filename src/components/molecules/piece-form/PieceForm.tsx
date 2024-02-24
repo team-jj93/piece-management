@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "lucide-react";
@@ -26,46 +24,50 @@ import {
 import DayPicker from "@/components/atoms/day-picker";
 import Textarea from "@/components/atoms/textarea";
 import { pieces } from "@/resources/pieces";
+import ImageField from "./components/ImageField";
 
-const pieceEditorSchema = z.object({
-  name: z.string({ required_error: "필수 작성" }),
-  receivedDate: z.date({ required_error: "필수 작성" }),
-  scheduledDepartureDate: z.date({ required_error: "필수 작성" }),
+const pieceFormSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: "작성해주세요." })
+    .min(2, { message: "이름은 2글자 이상으로 작성해주세요." }),
+  receivedDate: z.date({ required_error: "작성해주세요." }),
+  scheduledDepartureDate: z.date({ required_error: "작성해주세요." }),
   requester: z.string().optional(),
   imgUrl: z.string().optional(),
   label: z.string().optional(),
   memo: z.string().optional(),
 });
 
-interface ImageInputProps {
-  onChange: (event: any) => void;
+export type PieceFormValues = z.infer<typeof pieceFormSchema>;
+
+interface PieceFormProps {
+  defaultValues?: Partial<PieceFormValues>;
+  className?: string;
+  getImageUrl: (file: File) => Promise<string>;
+  onSubmit: (data: PieceFormValues) => void;
 }
 
-const ImageInput = ({ onChange }: ImageInputProps) => {
-  return (
-    <Input
-      type="file"
-      onChange={() => {
-        onChange({ target: { value: pieces[0].imgUrl } });
-      }}
-    ></Input>
-  );
-};
-
-export type PieceEditorValues = z.infer<typeof pieceEditorSchema>;
-
-interface PieceEditorProps {
-  onSubmit: (data: PieceEditorValues) => void;
-}
-
-const PieceEditor = ({ onSubmit }: PieceEditorProps) => {
-  const form = useForm<PieceEditorValues>({
-    resolver: zodResolver(pieceEditorSchema),
+const PieceForm = ({
+  defaultValues,
+  className,
+  getImageUrl,
+  onSubmit,
+}: PieceFormProps) => {
+  const form = useForm<PieceFormValues>({
+    defaultValues: {
+      name: "",
+      ...defaultValues,
+    },
+    resolver: zodResolver(pieceFormSchema),
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={cn("space-y-8", className)}
+      >
         <FormField
           control={form.control}
           name="name"
@@ -73,7 +75,7 @@ const PieceEditor = ({ onSubmit }: PieceEditorProps) => {
             <FormItem>
               <FormLabel>이름</FormLabel>
               <FormControl>
-                <Input placeholder="그림 이름" {...field} />
+                <Input placeholder="그림 이름" autoComplete="off" {...field} />
               </FormControl>
               {/* <FormDescription>그림</FormDescription> */}
               <FormMessage />
@@ -198,11 +200,18 @@ const PieceEditor = ({ onSubmit }: PieceEditorProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>그림 사진</FormLabel>
-              {field.value && <img src={field.value} alt="ss" />}
+              {/* {field.value && <Image src={field.value} alt="ss" />}
               <FormControl>
                 <ImageInput onChange={field.onChange} />
-              </FormControl>
+              </FormControl> */}
               {/* <FormDescription>그림</FormDescription> */}
+              <FormControl>
+                <ImageField
+                  value={field.value}
+                  onChange={field.onChange}
+                  getImageUrl={getImageUrl}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -227,4 +236,4 @@ const PieceEditor = ({ onSubmit }: PieceEditorProps) => {
   );
 };
 
-export default PieceEditor;
+export default PieceForm;

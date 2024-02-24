@@ -30,13 +30,17 @@ const PieceList = ({ pieces }: PieceListProps) => {
             <AccordionPrimitive.Header className="px-4 flex w-full justify-between gap-4">
               <div className="w-12 h-12 overflow-hidden">
                 <AspectRatio ratio={1 / 1} className="bg-muted w-full h-full">
-                  <Image
-                    className="rounded-md object-cover"
-                    src={piece.imgUrl}
-                    alt={piece.name}
-                    fill
-                    unoptimized
-                  />
+                  {piece.imgUrl ? (
+                    <Image
+                      className="rounded-md object-cover"
+                      src={piece.imgUrl}
+                      alt={piece.name}
+                      fill
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-full bg-slate-400" />
+                  )}
                 </AspectRatio>
               </div>
               <AccordionPrimitive.Trigger className="flex-auto flex justify-between items-center gap-4 px-1 py-4 text-sm font-medium transition-all hover:font-bold [&[data-state=open]>svg]:rotate-180 w-10/12 overflow-hidden">
