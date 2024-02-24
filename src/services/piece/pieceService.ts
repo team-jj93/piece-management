@@ -2,6 +2,7 @@ import { Piece } from "@/entities/piece";
 import { APIError } from "@/utils/fetch";
 import { PieceFetchInterface, PieceServiceInterface } from "./interface";
 import { UpdatePieceProps, pieceSchema, createPiecePropsSchema, piecesSchema, updatePiecePropsSchema, CreatePieceProps } from "./schema";
+import { createFormData } from "@/utils";
 
 
 export class PieceService implements PieceServiceInterface {
@@ -69,7 +70,9 @@ export class PieceService implements PieceServiceInterface {
 
   public async uploadImage(image: File) {
     try {
-      const imgUrl = await this.pieceFetch.post("image/piece", image, { contentType: "multipart/form-data" });
+      const formData = createFormData({ image });
+
+      const imgUrl = await this.pieceFetch.post("image/piece", formData, { contentType: "multipart/form-data" });
 
       if (typeof imgUrl !== "string") {
         throw new APIError().alert();
@@ -87,13 +90,14 @@ export class PieceService implements PieceServiceInterface {
     try {
       const validatedPieceProps = createPiecePropsSchema.parse(createPieceProps);
 
-      const id = await this.pieceFetch.post("piece", validatedPieceProps)
+      const id = await this.pieceFetch.post("piece", validatedPieceProps);
+      const numberedId = Number(id);
 
-      if (typeof id !== "number") {
+      if (Number.isNaN(numberedId)) {
         throw new APIError().reset("알 수 없는 에러입니다.");
       }
 
-      return id;
+      return numberedId;
     } catch (error) {
       this.errorHandler(error);
     }

@@ -176,6 +176,43 @@ export class ResourcePieceFetch implements PieceFetchInterface {
     return pieces;
   }
 
+  private uploadImage(data?: any) {
+    if (!(data instanceof FormData)) {
+      throw new APIError("잘못된 요청입니다.");
+    }
+
+    const image = data.get("image");
+
+    if (!(image instanceof File)) {
+      throw new APIError("데이터가 없습니다.");
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(image);
+
+    return new Promise((resolve, reject) => {
+      reader.onload = () => {
+        const url = reader.result;
+
+        if (typeof url !== "string") {
+          reject("파일이 읽히지 않음.");
+
+          return;
+        }
+
+        resolve(url);
+      };
+    }).then((value) => {
+      if (typeof value === "string") {
+        return value;
+      }
+
+      return "";
+    }).catch(message => {
+      return Promise.reject(new APIError(message));
+    });
+  }
+
   public async get(path: string, config: RequestConfig = {}) {
     const paths = String(path).split("/");
 
@@ -195,7 +232,7 @@ export class ResourcePieceFetch implements PieceFetchInterface {
 
       case "image":
         if (paths[1] === "piece") {
-          return "";
+          return this.uploadImage(data);
         }
 
       default:
