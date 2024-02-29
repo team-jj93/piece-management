@@ -1,5 +1,3 @@
-"use client"
-
 import Calendar from "./Calendar";
 
 export type * from "./types";

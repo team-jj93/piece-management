@@ -96,4 +96,28 @@ test("convertToCalendarEventMap", () => {
 
   console.log(convertToEventMap(events)[2023][11][1]);
   console.log(new Date(2023, 11, 1, 1));
-})
+});
+
+test("for of polyfill", () => {
+
+  const iter = {
+    [Symbol.iterator]() {
+      let count = 0;
+      const max = 5;
+
+      return {
+        next() {
+          return {
+            value: ++count,
+            done: count <= max
+          }
+        }
+      }
+    }
+  }[Symbol.iterator]();
+
+  for (let value = iter.next(); value.done; value = iter.next()) {
+    console.log(value.value);
+  }
+
+});

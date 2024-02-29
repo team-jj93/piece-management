@@ -1,21 +1,43 @@
-"use client";
-
 import { MouseEventHandler, RefAttributes, forwardRef, useMemo } from "react";
 
-import type { CalendarEvent, CalendarEventsMonth } from "../types";
+import type { CalendarEventMap, CalendarEvent } from "../types";
 import { cn } from "@/utils";
 import { useCalendarControls, useCalendarState } from "../hooks/useCalendar";
 import { convertToEventMap } from "../utils/convertEvent";
 import { getClassNames } from "../utils/getClassNames";
 import Nav from "./Nav";
-import { CalendarDays } from "lucide-react";
+
+function getDateProps(currentDate: Date, eventMap: CalendarEventMap) {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const date = currentDate.getDate();
+  const time = currentDate.getTime();
+  const day = currentDate.getDay();
+  const events = (() => {
+    if (!eventMap[year]) {
+      return [];
+    }
+
+    if (!eventMap[year][month]) {
+      return [];
+    }
+
+    return eventMap[year][month][date] ?? [];
+  })();
+
+  return {
+    date,
+    time,
+    day,
+    events,
+  };
+}
 
 const DAYS_OF_WEEK = ["일", "월", "화", "수", "목", "금", "토"];
 
 interface SelectDateIconClassProps {
   isSelected: boolean;
   isToday: boolean;
-  isViewOutside: boolean;
 }
 
 interface DateProps {
@@ -23,7 +45,7 @@ interface DateProps {
   todayTime: number;
   selectedTime: number;
   currentDate: Date;
-  eventsMonth: CalendarEventsMonth;
+  eventMap: CalendarEventMap;
   setSelectedDate: (date: Date) => void;
   classNames?: {
     day?: string;
@@ -37,22 +59,16 @@ interface DateProps {
 }
 
 const Date = ({
-  eventsMonth,
+  eventMap,
   todayTime,
   currentDate,
   selectedTime,
-  viewMonth,
   setSelectedDate,
   classNames = {},
 }: DateProps) => {
-  const date = currentDate.getDate();
-  const month = currentDate.getMonth();
-  const time = currentDate.getTime();
-  const day = currentDate.getDay();
-  const events = eventsMonth[date];
+  const { date, time, day, events } = getDateProps(currentDate, eventMap);
   const isSelected = time === selectedTime;
   const isToday = time === todayTime;
-  const isViewOutside = month !== viewMonth;
 
   return (
     <div className={classNames.dateContainer}>
@@ -67,7 +83,6 @@ const Date = ({
               ? classNames.selectDateButton({
                   isSelected,
                   isToday,
-                  isViewOutside,
                 })
               : classNames.selectDateButton
           )}
@@ -81,14 +96,11 @@ const Date = ({
                 ["bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"]:
                   isSelected,
                 ["bg-red-500 bg-opacity-80 text-white"]: isToday,
-                ["text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30"]:
-                  isViewOutside,
               },
               typeof classNames.selectDateIcon === "function"
                 ? classNames.selectDateIcon({
                     isSelected,
                     isToday,
-                    isViewOutside,
                   })
                 : classNames.selectDateIcon
             )}
@@ -99,17 +111,45 @@ const Date = ({
       </div>
 
       <div className={classNames.eventsContainer}>
-        {events &&
-          !isViewOutside &&
-          events.map(({ date, element }, idx) => (
-            <div key={idx} className={classNames.event}>
-              {typeof element === "function"
-                ? element({ date, setSelectedDate })
-                : element}
-            </div>
-          ))}
+        {events.map(({ date, element }, idx) => (
+          <div key={idx} className={classNames.event}>
+            {typeof element === "function"
+              ? element({ date, setSelectedDate })
+              : element}
+          </div>
+        ))}
       </div>
     </div>
+  );
+};
+
+interface TitleProps {
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  viewWeekCalendar: Date[];
+}
+
+const Title = ({ onClick, viewWeekCalendar }: TitleProps) => {
+  const firstDate = viewWeekCalendar[0];
+  const lastDate = viewWeekCalendar[viewWeekCalendar.length - 1];
+
+  return (
+    <h2 aria-live="polite" role="presentation" className="text-lg font-bold">
+      <button
+        type="button"
+        className="w-full h-auto text-inherit hover:text-muted border-b"
+        onClick={onClick}
+      >
+        {firstDate.getMonth() === lastDate.getMonth()
+          ? `${firstDate.getFullYear()}년 ${firstDate.getMonth() + 1}월`
+          : firstDate.getFullYear() === lastDate.getFullYear()
+            ? `${firstDate.getFullYear()}년 ${firstDate.getMonth() + 1}월 ~ ${
+                lastDate.getMonth() + 1
+              }월`
+            : `${firstDate.getFullYear()}년 ${
+                firstDate.getMonth() + 1
+              }월 ~ ${lastDate.getFullYear()}년 ${lastDate.getMonth() + 1}월`}
+      </button>
+    </h2>
   );
 };
 
@@ -158,25 +198,16 @@ const Week = forwardRef<
     },
     ref
   ) => {
-    const {
-      viewYear,
-      viewMonth,
-      viewWeek,
-      viewMonthCalendar,
-      todayTime,
-      selectedTime,
-    } = useCalendarState();
+    const { viewYear, viewMonth, viewWeekCalendar, todayTime, selectedTime } =
+      useCalendarState();
+
     const {
       moveToPreviousWeek,
       moveToNextWeek,
       setSelectedDate,
       resetToToday,
-      setViewDate,
     } = useCalendarControls();
     const eventMap = useMemo(() => convertToEventMap(events), [events]);
-    const eventsMonth = eventMap[viewYear]
-      ? eventMap[viewYear][viewMonth] ?? {}
-      : {};
 
     const dateClassNames = useMemo(
       () => ({
@@ -206,19 +237,7 @@ const Week = forwardRef<
             header
           )}
         >
-          <h2
-            aria-live="polite"
-            role="presentation"
-            className="text-lg font-bold"
-          >
-            <button
-              type="button"
-              className="w-full h-auto text-inherit hover:text-muted border-b"
-              onClick={onClickTitle}
-            >
-              {viewYear}년 {viewMonth + 1}월
-            </button>
-          </h2>
+          <Title onClick={onClickTitle} viewWeekCalendar={viewWeekCalendar} />
           <Nav
             onClickLeft={moveToPreviousWeek}
             onClickRight={moveToNextWeek}
@@ -238,19 +257,18 @@ const Week = forwardRef<
             weekContainer
           )}
         >
-          {viewMonthCalendar[viewWeek] &&
-            viewMonthCalendar[viewWeek].map((day) => (
-              <Date
-                key={day.getTime()}
-                eventsMonth={eventsMonth}
-                currentDate={day}
-                selectedTime={selectedTime}
-                viewMonth={viewMonth}
-                todayTime={todayTime}
-                setSelectedDate={setSelectedDate}
-                classNames={dateClassNames}
-              />
-            ))}
+          {viewWeekCalendar.map((day) => (
+            <Date
+              key={day.getTime()}
+              eventMap={eventMap}
+              currentDate={day}
+              selectedTime={selectedTime}
+              viewMonth={viewMonth}
+              todayTime={todayTime}
+              setSelectedDate={setSelectedDate}
+              classNames={dateClassNames}
+            />
+          ))}
         </div>
       </div>
     );

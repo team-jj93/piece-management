@@ -8,6 +8,7 @@ export interface CalendarState {
   viewMonth: number;
   viewWeek: number;
   viewDay: number;
+  viewWeekCalendar: Date[];
   viewMonthCalendar: Date[][];
   viewMonthCalendars: Date[][][];
   currentViewMonthCalendarIndex: number;
@@ -95,6 +96,7 @@ class CalendarManager {
       viewMonth: this.viewMonth,
       viewWeek: this.viewWeek,
       viewDay: this.viewDay,
+      viewWeekCalendar: this.viewMonthCalendar[this.viewWeek],
       viewMonthCalendar: this.viewMonthCalendar,
       viewMonthCalendars: this.viewMonthCalendars,
       currentViewMonthCalendarIndex: this.currentViewMonthCalendarIndex,
@@ -120,7 +122,7 @@ class CalendarManager {
   private notify() {
     this.refreshTodayDate();
     this.setCalendarState();
-    console.log(this.calendarState, this.calendarCount);
+
     this.listeners.forEach(listener => listener(this.calendarState));
   }
 
@@ -162,7 +164,7 @@ class CalendarManager {
     const newViewMonth = this.viewDate.getMonth();
     const newViewDate = this.viewDate.getDate();
     const newViewDay = this.viewDate.getDay();
-    const newViewFirstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
+    const newViewFirstDay = new Date(newViewYear, newViewMonth, 1).getDay();
 
     if (newViewYear !== this.viewYear || newViewMonth !== this.viewMonth) {
       this.setViewMonthCalendars();
@@ -171,9 +173,7 @@ class CalendarManager {
     this.viewYear = newViewYear;
     this.viewMonth = newViewMonth;
     this.viewDay = newViewDay;
-    // TO-DO: 이 부분 수정 필요함.
-    this.viewWeek = Math.floor((newViewDate + newViewFirstDay) / 7);
-    console.log(newViewDate, newViewFirstDay, this.viewWeek);
+    this.viewWeek = Math.floor((newViewDate + newViewFirstDay - 1) / 7);
   }
 
   /**
