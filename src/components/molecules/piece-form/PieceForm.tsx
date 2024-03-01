@@ -48,6 +48,9 @@ interface PieceFormProps {
   onSubmit: (data: PieceFormValues) => void;
 }
 
+// TO-DO
+// date 선택후 창이 꺼지지 않는 문제 해결해야함
+// Popover 컴포넌트를 직접 짜야 함.
 const PieceForm = ({
   defaultValues,
   className,
@@ -111,9 +114,32 @@ const PieceForm = ({
                 <PopoverContent className="w-auto p-0" align="start">
                   <DayPicker
                     mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
                     initialFocus
+                    selected={field.value}
+                    onSelect={(receivedDate) => {
+                      const scheduledDepartureDate =
+                        form.getValues().scheduledDepartureDate;
+
+                      if (
+                        scheduledDepartureDate &&
+                        receivedDate &&
+                        scheduledDepartureDate <= receivedDate
+                      ) {
+                        form.setValue(
+                          "scheduledDepartureDate",
+                          new Date(
+                            receivedDate.getFullYear(),
+                            receivedDate.getMonth(),
+                            receivedDate.getDate() + 1
+                          )
+                        );
+                      }
+
+                      field.onChange(receivedDate);
+                    }}
+                    disabled={{
+                      after: new Date(),
+                    }}
                   />
                 </PopoverContent>
               </Popover>
@@ -156,6 +182,19 @@ const PieceForm = ({
                     selected={field.value}
                     onSelect={field.onChange}
                     initialFocus
+                    disabled={{
+                      before: (() => {
+                        const receivedDate = form.getValues().receivedDate;
+                        return (
+                          receivedDate &&
+                          new Date(
+                            receivedDate.getFullYear(),
+                            receivedDate.getMonth(),
+                            receivedDate.getDate() + 1
+                          )
+                        );
+                      })(),
+                    }}
                   />
                 </PopoverContent>
               </Popover>
