@@ -38,6 +38,12 @@ export class PieceService implements PieceServiceInterface {
     return null;
   }
 
+  /**
+   * TO-DO
+   * 입력한 달과 전 후 +-1 달의 piece 데이터를 가져와야 함.
+   * @param date 
+   * @returns 
+   */
   public async getMonthlyPieces(date: Date) {
     try {
       const data = await this.pieceFetch.get("piece", { query: { date: date.toDateString() } });
@@ -50,27 +56,22 @@ export class PieceService implements PieceServiceInterface {
     return [];
   }
 
+  /**
+   * TO-DO 
+   * 입력한 날의 piece 데이터와 입력한 날이 오늘이면 해당 날짜의 delayed 데이터도 불러와야 함. 
+   * @param date 
+   * @returns 
+   */
   public async getPiecesByStatus(date: Date): Promise<PiecesByStatus> {
     try {
+      const today = new Date();
+
       const data = await this.pieceFetch.get("piece", { query: { date: date.toDateString() } });
+      // const delayedData = await this.getStatusBasedPieces("delayed");
 
       const pieces = piecesSchema.parse(data) as Piece[];
 
       return groupByStatus(date, pieces);
-    } catch (error) {
-      this.errorHandler(error);
-    }
-
-    return {};
-  }
-
-  public async getDailyPieces(date: Date) {
-    try {
-      const data = await this.pieceFetch.get("piece", { query: { date: date.toDateString() } });
-
-      const pieces = piecesSchema.parse(data);
-
-
     } catch (error) {
       this.errorHandler(error);
     }

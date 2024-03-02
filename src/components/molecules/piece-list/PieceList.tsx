@@ -28,7 +28,7 @@ const PieceList = ({ pieces }: PieceListProps) => {
         <AccordionItem value={piece.id} key={piece.id}>
           <div className="w-full h-fit flex justify-between">
             <AccordionPrimitive.Header className="px-4 flex w-full justify-between gap-4">
-              <div className="w-12 h-12 overflow-hidden">
+              <div className="w-12 h-full overflow-hidden flex items-center">
                 <AspectRatio ratio={1 / 1} className="bg-muted w-full h-full">
                   {piece.imgUrl ? (
                     <Image
