@@ -69,7 +69,7 @@ function groupByStatus(
  */
 const PieceEventCalendar = () => {
   const [isMonth, setIsMonth] = useState(false);
-  const { viewDate } = useCalendarState();
+  const { viewDate, selectedDatePosition } = useCalendarState();
 
   const { isPending, error, data } = useQuery({
     queryKey: ["getPiece", viewDate],
@@ -143,14 +143,25 @@ const PieceEventCalendar = () => {
     })
     .flat();
 
+  const navButtonToday =
+    selectedDatePosition !== 0 ? "bg-red-500 text-white opacity-80" : undefined;
+
   if (isMonth) {
     return (
-      <Calendar.Month events={events} onClickTitle={() => setIsMonth(false)} />
+      <Calendar.Month
+        classNames={{ navButtonToday }}
+        events={events}
+        onClickTitle={() => setIsMonth(false)}
+      />
     );
   }
 
   return (
-    <Calendar.Week events={events} onClickTitle={() => setIsMonth(true)} />
+    <Calendar.Week
+      classNames={{ navButtonToday }}
+      events={events}
+      onClickTitle={() => setIsMonth(true)}
+    />
   );
 };
 

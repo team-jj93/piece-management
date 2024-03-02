@@ -247,6 +247,7 @@ const Week = forwardRef<
               navButton,
               navButtonNext,
               navButtonPrevious,
+              navButtonToday,
             }}
           />
         </div>

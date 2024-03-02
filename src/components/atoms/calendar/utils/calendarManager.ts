@@ -1,3 +1,4 @@
+import { compareDate } from "..";
 import CalendarMap from "./calendarMap";
 
 const calendarMap = new CalendarMap();
@@ -16,6 +17,7 @@ export interface CalendarState {
   selectedTime: number;
   todayDate: Date;
   todayTime: number;
+  selectedDatePosition: -1 | 0 | 1;
 }
 
 export interface CalendarControls {
@@ -43,6 +45,7 @@ class CalendarManager {
   private currentViewMonthCalendarIndex = 0;
   private selectedDate = new Date();
   private todayTime = 0;
+  private selectedDatePosition: -1 | 0 | 1 = 0;
   private calendarCount = 1;
   private listeners: Set<CalendarManagerListener> = new Set();
   private calendarState!: CalendarState;
@@ -87,6 +90,7 @@ class CalendarManager {
 
     this.todayDate = date;
     this.todayTime = time;
+    this.selectedDatePosition = compareDate(this.todayDate, this.selectedDate);
   }
 
   private setCalendarState() {
@@ -104,6 +108,7 @@ class CalendarManager {
       selectedTime: this.selectedDate.getTime(),
       todayDate: this.todayDate,
       todayTime: this.todayTime,
+      selectedDatePosition: this.selectedDatePosition,
     }
   }
 
@@ -220,6 +225,7 @@ class CalendarManager {
     }
 
     this.selectedDate = date;
+    this.selectedDatePosition = compareDate(this.todayDate, this.selectedDate);
 
     this.setViewDate(date);
   }

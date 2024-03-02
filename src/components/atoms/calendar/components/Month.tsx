@@ -221,6 +221,7 @@ const Month = forwardRef<
               navButton,
               navButtonNext,
               navButtonPrevious,
+              navButtonToday,
             }}
           />
         </div>
