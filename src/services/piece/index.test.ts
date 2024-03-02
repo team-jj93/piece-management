@@ -16,7 +16,7 @@ test("pieceService", async () => {
 
   const pieces = await pieceService.getStatusBasedPieces("all", 0);
   const monthlyPieces = await pieceService.getMonthlyPieces(new Date("2024-1-20"));
-  console.log(pieces);
-  console.log(monthlyPieces);
+  // console.log(pieces);
+  // console.log(monthlyPieces);
   expect(pieces[0].name).toEqual("그림1");
 });

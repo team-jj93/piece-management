@@ -6,7 +6,7 @@ export interface Piece {
   imgUrl: string | null;
   label: string | null;
   memo: string | null;
-  status: "received" | "delayed" | "departured";
+  status: "received" | "expected" | "delayed" | "departured";
   receivedDate: Date;
   scheduledDepartureDate: Date;
   departureDate: Date | null;

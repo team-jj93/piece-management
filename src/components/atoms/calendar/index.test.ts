@@ -1,4 +1,5 @@
 import CalendarManager from "./utils/calendarManager";
+import { compareDate } from "./utils/compareDate";
 import { convertToEventMap } from "./utils/convertEvent";
 
 test("calendarManager", () => {
@@ -117,7 +118,15 @@ test("for of polyfill", () => {
   }[Symbol.iterator]();
 
   for (let value = iter.next(); value.done; value = iter.next()) {
-    console.log(value.value);
+    //console.log(value.value);
   }
 
+});
+
+test("compareDate", () => {
+  const today = new Date();
+  const aDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  const bDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  expect(compareDate(aDate, bDate)).toBe(-1);
 });

@@ -1,6 +1,7 @@
 import { PieceFetchInterface, Query, RequestConfig } from "./interface";
 import { Piece } from "@/entities/piece";
 import { createPiecePropsSchema, updatePiecePropsSchema } from "./schema";
+import { pieces } from "@/resources/pieces";
 
 class APIError extends Error {
   status: number | string = 400;
@@ -27,7 +28,7 @@ export class ResourcePieceFetch implements PieceFetchInterface {
     scheduledDepartureDate: new Date(),
     departureDate: null,
   }
-  private pieces: Piece[] = [];
+  private pieces: Piece[] = pieces;
 
   private createPiece(pieceProps: any): number {
     try {

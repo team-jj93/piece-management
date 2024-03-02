@@ -7,10 +7,10 @@ import CalendarManager from "./utils/calendarManager";
 import Month from "./components/Month";
 import Week from "./components/Week";
 
-type CalendarProps = {
+interface CalendarProps {
   initialDate?: Date;
   children: ReactNode;
-};
+}
 const Calendar = ({ initialDate, children }: CalendarProps) => {
   // eslint-disable-next-line
   const calendarManager = useMemo(() => new CalendarManager(initialDate), []);

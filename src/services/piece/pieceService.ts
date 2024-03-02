@@ -3,6 +3,7 @@ import { APIError } from "@/utils/fetch";
 import { PieceFetchInterface, PieceServiceInterface } from "./interface";
 import { UpdatePieceProps, pieceSchema, createPiecePropsSchema, piecesSchema, updatePiecePropsSchema, CreatePieceProps } from "./schema";
 import { createFormData } from "@/utils";
+import { PiecesByStatus, groupByStatus } from "./utils/groupByStatus";
 
 
 export class PieceService implements PieceServiceInterface {
@@ -49,7 +50,35 @@ export class PieceService implements PieceServiceInterface {
     return [];
   }
 
-  public async getStatusBasedPieces(status: "received" | "delayed" | "departured" | "all", index: number, count: number = 10) {
+  public async getPiecesByStatus(date: Date): Promise<PiecesByStatus> {
+    try {
+      const data = await this.pieceFetch.get("piece", { query: { date: date.toDateString() } });
+
+      const pieces = piecesSchema.parse(data) as Piece[];
+
+      return groupByStatus(date, pieces);
+    } catch (error) {
+      this.errorHandler(error);
+    }
+
+    return {};
+  }
+
+  public async getDailyPieces(date: Date) {
+    try {
+      const data = await this.pieceFetch.get("piece", { query: { date: date.toDateString() } });
+
+      const pieces = piecesSchema.parse(data);
+
+
+    } catch (error) {
+      this.errorHandler(error);
+    }
+
+    return {};
+  }
+
+  public async getStatusBasedPieces(status: "received" | "expected" | "delayed" | "departured" | "all", index: number, count: number = 10) {
     try {
       const query = status === "all" ? {
         index: String(index), count: String(count)

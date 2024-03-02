@@ -1,61 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AlertCircle, CalendarClock, CheckCircle2, Disc2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import Calendar from "@/components/atoms/calendar";
-import PieceTable from "@/components/molecules/piece-table";
 import { Piece } from "@/entities/piece";
 import { useCalendarState } from "@/components/atoms/calendar/hooks/useCalendar";
 import { pieceService } from "@/services/piece";
-
-interface PieceCalendarDateProps {
-  pieces: Piece[];
-}
-
-const PieceCalendarDate = ({ pieces }: PieceCalendarDateProps) => {
-  const { selectedDate } = useCalendarState();
-
-  const selectedPieces = useMemo(() => {
-    const selectedDateToString = selectedDate.toLocaleDateString();
-
-    return pieces.filter(
-      ({ scheduledDepartureDate, departureDate, receivedDate }) => {
-        if (
-          scheduledDepartureDate.toLocaleDateString() === selectedDateToString
-        ) {
-          return true;
-        }
-
-        if (departureDate?.toLocaleDateString() === selectedDateToString) {
-          return true;
-        }
-
-        if (receivedDate.toLocaleDateString() === selectedDateToString) {
-          return true;
-        }
-
-        return false;
-      }
-    );
-  }, [pieces, selectedDate]);
-
-  return <PieceTable pieces={selectedPieces} />;
-};
+import SelectedDatePieceTable from "./components/SelectedDatePieceTable";
 
 const PieceCalendar = () => {
   const [isMonth, setIsMonth] = useState(false);
-  const { isPending, error, data } = useQuery({
-    queryKey: ["repoData"],
-    queryFn: () => {
-      const date = new Date();
+  const { viewDate } = useCalendarState();
 
-      return pieceService.getMonthlyPieces(date);
+  const { isPending, error, data } = useQuery({
+    queryKey: ["getPiece", viewDate],
+    queryFn: () => {
+      return pieceService.getMonthlyPieces(viewDate);
     },
     initialData: [] as Piece[],
   });
-
+  console.log(data);
   const events = Object.entries(
     data.reduce(
       (
@@ -197,27 +163,28 @@ const PieceCalendar = () => {
     .flat();
 
   return (
-    <Calendar>
-      <div className="w-full h-auto">
-        {!isMonth && (
-          <Calendar.Week
-            events={events}
-            onClickTitle={() => setIsMonth(true)}
-          />
-        )}
-        {isMonth && (
-          <Calendar.Month
-            events={events}
-            onClickTitle={() => setIsMonth(false)}
-          />
-        )}
-        <div className="w-full px-3 mt-2">
-          <div className="w-full h-full border-t" />
-        </div>
-        <PieceCalendarDate pieces={data} />
+    <div className="w-full h-auto">
+      {!isMonth && (
+        <Calendar.Week events={events} onClickTitle={() => setIsMonth(true)} />
+      )}
+      {isMonth && (
+        <Calendar.Month
+          events={events}
+          onClickTitle={() => setIsMonth(false)}
+        />
+      )}
+      <div className="w-full px-3 mt-2">
+        <div className="w-full h-full border-t" />
       </div>
-    </Calendar>
+      <SelectedDatePieceTable />
+    </div>
   );
 };
 
-export default PieceCalendar;
+const PieceCalendarWrapper = () => (
+  <Calendar>
+    <PieceCalendar />
+  </Calendar>
+);
+
+export default PieceCalendarWrapper;
