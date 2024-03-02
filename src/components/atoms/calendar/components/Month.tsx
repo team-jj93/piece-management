@@ -97,7 +97,7 @@ const DaysOfWeek = ({ className, dayClassName }: DaysOfWeekProps) => {
   );
 
   return (
-    <div className={cn("flex w-full h-fit text-center", className)}>
+    <div className={cn("flex w-full h-fit text-center px-3.5", className)}>
       <p className={day}>일</p>
       <p className={day}>월</p>
       <p className={day}>화</p>
@@ -195,7 +195,7 @@ const Month = forwardRef<
       <div ref={ref} className={cn("w-full h-auto", className)}>
         <div
           className={cn(
-            "w-full h-6 flex justify-between items-center px-3 mb-4",
+            "w-full h-6 flex justify-between items-center px-4 mb-4",
             header
           )}
         >
@@ -227,7 +227,9 @@ const Month = forwardRef<
 
         <DaysOfWeek className={daysOfWeek} dayClassName={day} />
 
-        <div className={cn("w-full min-w-[320px] h-fit", monthContainer)}>
+        <div
+          className={cn("w-full min-w-[320px] h-fit px-3.5", monthContainer)}
+        >
           {viewMonthCalendar.map((weekCalendar, idx) => (
             <div key={idx} className={cn("flex flex-row", week)}>
               {weekCalendar.map((day) => (

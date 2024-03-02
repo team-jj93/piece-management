@@ -198,7 +198,7 @@ const Week = forwardRef<
     },
     ref
   ) => {
-    const { viewYear, viewMonth, viewWeekCalendar, todayTime, selectedTime } =
+    const { viewMonth, viewWeekCalendar, todayTime, selectedTime } =
       useCalendarState();
 
     const {
@@ -214,7 +214,7 @@ const Week = forwardRef<
         ...getClassNames(
           {
             day: "w-full h-full leading-8 basis-1/7 text-muted-foreground rounded-md font-medium text-sm",
-            date: "w-full h-fit py-0 px-1",
+            date: "w-full h-fit py-0 px-0.5",
             eventsContainer:
               "w-full px-1 h-fit flex flex-col justify-start items-start",
             event:
@@ -233,7 +233,7 @@ const Week = forwardRef<
       <div ref={ref} className={cn("w-full h-auto", className)}>
         <div
           className={cn(
-            "w-full h-6 flex justify-between items-center px-3 mb-4",
+            "w-full h-6 flex justify-between items-center px-4 mb-4",
             header
           )}
         >
@@ -253,7 +253,7 @@ const Week = forwardRef<
 
         <div
           className={cn(
-            "w-full min-w-[320px] h-fit grid grid-cols-7",
+            "w-full min-w-[320px] h-fit grid grid-cols-7 px-3.5 box-border",
             weekContainer
           )}
         >
