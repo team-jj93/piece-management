@@ -27,7 +27,6 @@ const SelectedDatePieceTable = () => {
 
       if (defaultValue === "received") {
         piecesByStatus.delayed = undefined;
-        piecesByStatus.expected = undefined;
 
         return piecesByStatus;
       }
